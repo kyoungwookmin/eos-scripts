@@ -458,21 +458,29 @@ if cvp != '': # if the CVP IP address has been specified when running the script
 
 if eve:
    print ("Creating qcow2 image")
+   print ("eos-filename : " + eos_filename )
+
    os.system("/opt/qemu/bin/qemu-img convert -f vmdk -O qcow2 " + eos_filename + " hda.qcow2")
    eos_folder_name = ""
-   x = eos_filename.split("-")
-   for y in x[:-1]:
-      eos_folder_name+=str(y.lower())
-      eos_folder_name+="-"
-   eos_folder_name+=str(x[-1])
-   eos_folder_name = eos_folder_name.rstrip(".vmdk")
+#   x = eos_filename.split("-")
+#   for y in x[:-1]:
+#      eos_folder_name+=str(y.lower())
+#      eos_folder_name+="-"
+#   eos_folder_name+=str(x[-1])
+#   eos_folder_name = eos_folder_name.rstrip(".vmdk")
+
+   eos_folder_name = "veos-"+image
+
    if ztp:
       eos_folder_name+="-noztp"
 
-   os.system("mkdir -p /opt/unetlab/addons/qemu/" + eos_folder_name.rstrip)
-   os.system("mv hda.qcow2 /opt/unetlab/addons/qemu/" + eos_folder_name.rstrip)
+#   os.system("mkdir -p /opt/unetlab/addons/qemu/" + eos_folder_name.rstrip)
+#   os.system("mv hda.qcow2 /opt/unetlab/addons/qemu/" + eos_folder_name.rstrip)
+
+   os.system("mkdir -p /opt/unetlab/addons/qemu/" + eos_folder_name)
+   os.system("mv hda.qcow2 /opt/unetlab/addons/qemu/" + eos_folder_name)
    os.system("/opt/unetlab/wrappers/unl_wrapper -a fixpermissions")
-   os.system("rm "+ eos_filename)
+#   os.system("rm "+ eos_filename)
    print ("Image successfully created")
 
    eve_path = "/opt/unetlab/addons/qemu/" + eos_folder_name
@@ -481,9 +489,22 @@ if eve:
       os.system("rm -rf " + eve_path + "/raw")
       os.system("mkdir -p " + eve_path + "/raw")
       os.system("guestmount -a {}/hda.qcow2 -m /dev/sda2 {}/raw/".format(eve_path,eve_path))
-      with open(eve_path + '/raw/zerotouch-config', 'w') as zfile:
-            zfile.write('DISABLE=True')
+#      with open(eve_path + '/raw/zerotouch-config', 'w') as zfile:
+#            zfile.write('DISABLE=True')
+      os.system("cp ./minfiles/*  {}/raw/".format(eve_path))
+
       print("Unmounting volume at: " + str(eve_path))
       os.system("guestunmount " + eve_path + '/raw/')
       os.system('rm -rf ' + eve_path + '/raw')
       print("Volume has been successfully unmounted at: " + str(eve_path))
+   else:
+      print("Mounting volume to ZTP mode")
+      os.system("rm -rf " + eve_path + "/raw")
+      os.system("mkdir -p " + eve_path + "/raw")
+      os.system("guestmount -a {}/hda.qcow2 -m /dev/sda2 {}/raw/".format(eve_path,eve_path))
+      os.system("cp ./minfiles/min*  {}/raw/".format(eve_path))
+      print("Unmounting volume at: " + str(eve_path))
+      os.system("guestunmount " + eve_path + '/raw/')
+      os.system('rm -rf ' + eve_path + '/raw')
+      print("Volume has been successfully unmounted at: " + str(eve_path))
+
