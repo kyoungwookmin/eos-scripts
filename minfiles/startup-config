@@ -1,0 +1,58 @@
+! boot system flash:/vEOS-lab.swi
+!
+alias gt bash python /mnt/flash/min-20.06.17.py %1
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+logging buffered 1000
+logging console informational
+logging monitor informational
+logging synchronous level all
+!
+hostname ztp-dis
+!
+spanning-tree mode mstp
+!
+aaa authorization exec default local
+!
+no aaa root
+!
+username admin privilege 15 role network-admin secret sha512 $6$SSs7gVf0lD1y6UxK
+$RanWiWMRVbLonGyzReewcGqUtcG468.WqWgogOqea.iIwmcuCXXStkhSyPJw8xsG4q031OT0jdSD/R/
+90RD231
+!
+interface Ethernet1
+!
+interface Ethernet2
+!
+interface Ethernet3
+!
+interface Ethernet4
+!
+interface Ethernet5
+!
+interface Ethernet6
+!
+interface Ethernet7
+!
+interface Ethernet8
+!
+interface Ethernet9
+!
+interface Ethernet10
+!
+interface Ethernet11
+!
+interface Ethernet12
+!
+interface Ethernet13
+!
+interface Ethernet14
+!
+interface Management1
+!
+ip routing
+!
+end
